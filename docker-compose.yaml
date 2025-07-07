@@ -1,0 +1,27 @@
+services:
+  db-postgres:
+    image: postgres:17-alpine
+    restart: always
+    container_name: database-postgres-rinha
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: rinha
+      POSTGRES_PASSWORD: rinha
+      POSTGRES_DB: rinha_db
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - 5672:5672
+      - 15672:15672
+    volumes:
+      - ./data/rabbitmq:/var/lib/rabbitmq
+networks:
+  database-network:
+    name: database-network
+    driver: bridge
+
+
