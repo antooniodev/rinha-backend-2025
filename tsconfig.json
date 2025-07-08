@@ -9,12 +9,7 @@
     "strict": true,
     "skipLibCheck": true,
     "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
-    "baseUrl": "./src",
-    "paths": {
-      "@/modules/*": ["modules/*"],
-      "@/shared/*": ["shared/*"]
-    }
+    "emitDecoratorMetadata": true
   },
   "include": ["src"],
   "exclude": ["node_modules"]

@@ -1,4 +1,4 @@
-import { defaultProcessor } from "config/axios"
+import { defaultProcessor } from "../../config/axios"
 import {
   ProcessorHealthCheck,
   SendPaymentToProcessorInput,

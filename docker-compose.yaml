@@ -3,6 +3,8 @@ services:
     image: postgres:17-alpine
     restart: always
     container_name: database-postgres-rinha
+    networks:
+      - backend
     ports:
       - "5432:5432"
     environment:
@@ -11,17 +13,33 @@ services:
       POSTGRES_DB: rinha_db
     volumes:
       - ./data/postgres:/var/lib/postgresql/data
-  rabbitmq:
-    image: rabbitmq:3-management
-    container_name: rabbitmq
+  # rabbitmq:
+  #   image: rabbitmq:3-management
+  #   container_name: rabbitmq
+  #   ports:
+  #     - 5672:5672
+  #     - 15672:15672
+  #   volumes:
+  #     - ./data/rabbitmq:/var/lib/rabbitmq
+  meu-backend:
+    image: antoniocarvalhodev/rinha-dev:1.2
+    restart: always
+    container_name: rinha-backend-teste
+    networks:
+      - backend
+      - payment-processor
     ports:
-      - 5672:5672
-      - 15672:15672
-    volumes:
-      - ./data/rabbitmq:/var/lib/rabbitmq
+      - 9999:9999
+    environment:
+      - PAYMENT_PROCESSOR_URL_DEFAULT=http://payment-processor-default:8080
+      - PAYMENT_PROCESSOR_URL_FALLBACK=http://payment-processor-fallback:8080
+      - DATABASE_URL=postgresql://rinha:rinha@db-postgres:5432/rinha_db
+    depends_on:
+      - db-postgres
 networks:
-  database-network:
-    name: database-network
+   backend:
     driver: bridge
+   payment-processor:
+    external: true
 
 

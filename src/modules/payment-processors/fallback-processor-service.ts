@@ -1,4 +1,4 @@
-import { fallbackProcessor } from "config/axios"
+import { fallbackProcessor } from "../../config/axios"
 import {
   ProcessorHealthCheck,
   SendPaymentToProcessorInput,

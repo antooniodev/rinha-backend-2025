@@ -1,11 +1,11 @@
-import { buildApp } from "app"
+import { buildApp } from "./app"
 import { prisma } from "./config/prisma"
 
 const server = buildApp()
 
 const start = async (): Promise<void> => {
   try {
-    await server.listen({ port: 9999 })
+    await server.listen({ port: 9999, host: "0.0.0.0" })
     console.log(`Server is running on http://localhost:9999`)
     prisma.$connect()
   } catch (error) {

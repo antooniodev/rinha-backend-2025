@@ -5,8 +5,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint . --ext .ts",
-    "dev": "ts-node-dev -r dotenv/config -r tsconfig-paths/register src/server.ts",
-    "start": "node -r dotenv/config dist/index.js"
+    "dev": "ts-node-dev -r dotenv/config src/server.ts",
+    "start": "node -r dotenv/config dist/server.js",
+    "build": "tsc"
   },
   "keywords": [],
   "author": "",
