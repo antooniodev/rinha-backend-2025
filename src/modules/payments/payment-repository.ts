@@ -14,10 +14,12 @@ export const PaymentRepository = {
   getSummary: async (from?: string, to?: string) => {
     const where: any = {}
     if (from || to) {
-      where.createdAt = {}
-      if (from) where.createdAt.gte = from
-      if (to) where.createdAt.lte = to
+      where.requestedAt = {}
+      if (from) where.requestedAt.gte = new Date(from)
+      if (to) where.requestedAt.lte = new Date(to)
     }
+
+    console.log("WHERE", where)
     const result = await prisma.payment.groupBy({
       by: ["processor"],
       _sum: {
@@ -26,8 +28,10 @@ export const PaymentRepository = {
       _count: {
         correlationId: true,
       },
-      where: Object.keys(where).length ? where : undefined,
+      where,
     })
+    const test = await prisma.payment.findMany({ where })
+    console.log("TEST", test)
 
     // Format the result as requested
     const formatted: Record<

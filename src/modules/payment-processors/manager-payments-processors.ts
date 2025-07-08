@@ -48,10 +48,13 @@ export const ManagerPaymentsProcessors = {
       await new Promise((resolve) => setTimeout(resolve, 6000))
       const healthCheck = await ManagerPaymentsProcessors.handleHealthCheck()
       if (healthCheck.processor === "default") {
+        console.log("Using Default Payment Processor, body:", paymentToSent)
+
         await DefaultPaymentProcessorService.managerPaymentProcessor(
           paymentToSent
         )
       } else {
+        console.log("Using Fallback Payment Processor, body:", paymentToSent)
         await FallbackPaymentProcessorService.managerPaymentProcessor(
           paymentToSent
         )
