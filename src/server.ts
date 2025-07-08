@@ -1,5 +1,5 @@
 import { buildApp } from "app"
-import { prisma } from "./modules/config/prisma"
+import { prisma } from "./config/prisma"
 
 const server = buildApp()
 

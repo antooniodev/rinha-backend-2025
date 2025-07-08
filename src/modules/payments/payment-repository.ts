@@ -1,12 +1,13 @@
-import { prisma } from "../config/prisma"
-import { Payment } from "./payment-schema"
+import { prisma } from "../../config/prisma"
+import { Payment, PaymentLog } from "./payment-schema"
 export const PaymentRepository = {
-  savePayment: async (payment: Payment) => {
+  savePayment: async (payment: PaymentLog) => {
     return prisma.payment.create({
       data: {
         correlationId: payment.correlationId,
         amount: payment.amount,
         processor: payment.processor,
+        requestedAt: payment.requestedAt,
       },
     })
   },

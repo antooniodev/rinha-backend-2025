@@ -4,7 +4,11 @@ import z from "zod"
 export type Payment = {
   correlationId: string
   amount: number
+}
+
+export type PaymentLog = Payment & {
   processor: PaymentProcessor
+  requestedAt: string
 }
 
 export const savePaymentSchema = z.object({

@@ -1,5 +1,7 @@
+import { PaymentProcessor } from "@prisma/client"
+import { ManagerPaymentsProcessors } from "../payment-processors/manager-payments-processors"
 import { PaymentRepository } from "./payment-repository"
-import { Payment, SavePaymentInput } from "./payment-schema"
+import { Payment, PaymentLog, SavePaymentInput } from "./payment-schema"
 
 export const PaymentService = {
   getPaymentsSummary: async (from?: string, to?: string) => {
@@ -7,10 +9,12 @@ export const PaymentService = {
     return summary
   },
   processPayment: async (input: SavePaymentInput) => {
-    const payment: Payment = {
-      correlationId: input.correlationId,
-      amount: input.amount,
-      processor: "fallback",
+    const processingPayment = await ManagerPaymentsProcessors.index(input)
+    const payment: PaymentLog = {
+      correlationId: processingPayment.correlationId,
+      amount: processingPayment.amount,
+      processor: processingPayment.processor as PaymentProcessor,
+      requestedAt: processingPayment.requestedAt,
     }
     return PaymentRepository.savePayment(payment)
   },
