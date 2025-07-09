@@ -6,7 +6,8 @@ const payment_service_1 = require("./payment-service");
 exports.PaymentsController = {
     getSummary: async (request, reply) => {
         try {
-            const { from, to } = await payment_schema_1.getPaymentsSummarySchema.parseAsync(request.query);
+            const { from, to } = request.query;
+            console.log("Fetching payment summary from:", from, "to:", to);
             const summary = await payment_service_1.PaymentService.getPaymentsSummary(from, to);
             reply.code(200).send(summary);
         }

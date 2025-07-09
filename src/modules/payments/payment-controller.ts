@@ -5,9 +5,10 @@ import { PaymentService } from "./payment-service"
 export const PaymentsController = {
   getSummary: async (request: FastifyRequest, reply: FastifyReply) => {
     try {
-      const { from, to } = await getPaymentsSummarySchema.parseAsync(
-        request.query
-      )
+      const { from, to } = request.query as { from?: string; to?: string }
+
+      console.log("Fetching payment summary from:", from, "to:", to)
+
       const summary = await PaymentService.getPaymentsSummary(from, to)
       reply.code(200).send(summary)
     } catch (error) {

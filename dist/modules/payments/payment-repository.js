@@ -16,11 +16,11 @@ exports.PaymentRepository = {
     getSummary: async (from, to) => {
         const where = {};
         if (from || to) {
-            where.createdAt = {};
+            where.requestedAt = {};
             if (from)
-                where.createdAt.gte = from;
+                where.requestedAt.gte = new Date(from);
             if (to)
-                where.createdAt.lte = to;
+                where.requestedAt.lte = new Date(to);
         }
         const result = await prisma_1.prisma.payment.groupBy({
             by: ["processor"],
@@ -30,7 +30,7 @@ exports.PaymentRepository = {
             _count: {
                 correlationId: true,
             },
-            where: Object.keys(where).length ? where : undefined,
+            where,
         });
         // Format the result as requested
         const formatted = {};

@@ -19,7 +19,6 @@ export const PaymentRepository = {
       if (to) where.requestedAt.lte = new Date(to)
     }
 
-    console.log("WHERE", where)
     const result = await prisma.payment.groupBy({
       by: ["processor"],
       _sum: {
@@ -30,20 +29,30 @@ export const PaymentRepository = {
       },
       where,
     })
-    const test = await prisma.payment.findMany({ where })
-    console.log("TEST", test)
 
-    // Format the result as requested
+    // Initialize the response with default structure
     const formatted: Record<
       string,
       { totalRequests: number; totalAmount: number }
-    > = {}
+    > = {
+      default: {
+        totalRequests: 0,
+        totalAmount: 0,
+      },
+      fallback: {
+        totalRequests: 0,
+        totalAmount: 0,
+      },
+    }
+
+    // Populate with actual data if exists
     for (const row of result) {
       formatted[row.processor] = {
         totalRequests: row._count.correlationId,
         totalAmount: Number(row._sum.amount ?? 0),
       }
     }
+
     return formatted
   },
 }
