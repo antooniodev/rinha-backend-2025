@@ -1,21 +1,20 @@
+import "dotenv/config"
 import { buildApp } from "./app"
-import { prisma } from "./config/prisma"
-import {
-  consumeQueue,
-  ManagerPaymentsProcessors,
-} from "./modules/payment-processors/manager-payments-processors"
+import { HealthCheckService } from "./health-check/health-check-service"
+import { PaymentService } from "./services/payment-service"
+import { BullMqService } from "./services/bullmq-service"
 
 const server = buildApp()
 
 const start = async (): Promise<void> => {
   try {
-    await consumeQueue()
+    BullMqService.processWorker()
+    await PaymentService.resetDatabaseData()
+
     await server.listen({ port: 9999, host: "0.0.0.0" })
     console.log(`Server is running on http://localhost:9999`)
-    prisma.$connect()
   } catch (error) {
     server.log.error(error)
-    prisma.$disconnect()
     process.exit(1)
   }
 }

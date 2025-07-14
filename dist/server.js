@@ -1,19 +1,19 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+require("dotenv/config");
 const app_1 = require("./app");
-const prisma_1 = require("./config/prisma");
-const manager_payments_processors_1 = require("./modules/payment-processors/manager-payments-processors");
+const payment_service_1 = require("./services/payment-service");
+const bullmq_service_1 = require("./services/bullmq-service");
 const server = (0, app_1.buildApp)();
 const start = async () => {
     try {
-        await (0, manager_payments_processors_1.consumeQueue)();
+        bullmq_service_1.BullMqService.processWorker();
+        await payment_service_1.PaymentService.resetDatabaseData();
         await server.listen({ port: 9999, host: "0.0.0.0" });
         console.log(`Server is running on http://localhost:9999`);
-        prisma_1.prisma.$connect();
     }
     catch (error) {
         server.log.error(error);
-        prisma_1.prisma.$disconnect();
         process.exit(1);
     }
 };
