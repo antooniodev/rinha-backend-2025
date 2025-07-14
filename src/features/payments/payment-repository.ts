@@ -1,6 +1,5 @@
-import { stringifyPayment, stringifyPaymentLog } from "./config/fast-serializer"
-import { redisClient } from "./config/redis"
-import { PaymentLog } from "./types/payment-schema"
+import { redisClient } from "../../core/lib/redis"
+import { PaymentLog } from "./payment-schema"
 
 export const PaymentRepository = {
   savePayment: async (payment: PaymentLog) => {

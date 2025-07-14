@@ -1,8 +1,7 @@
-import { healthRedisClient, redisClient } from "../config/redis"
-import { DefaultPaymentProcessorService } from "../services/default-processor-service"
-import { FallbackPaymentProcessorService } from "../services/fallback-processor-service"
-import { ScheduledTask } from "node-cron"
-import { ProcessorHealthCheck } from "../types/processors-schema"
+import { healthRedisClient } from "../../core/lib/redis"
+import { DefaultPaymentProcessorService } from "../processors/default-processor-service"
+import { FallbackPaymentProcessorService } from "../processors/fallback-processor-service"
+import { ProcessorHealthCheck } from "../processors/processors-schema"
 
 async function runHealthCheckCycle() {
   const check = async () => {

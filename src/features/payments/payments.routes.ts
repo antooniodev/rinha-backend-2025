@@ -1,5 +1,5 @@
 import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify"
-import { PaymentsController } from "../payment-controller"
+import { PaymentsController } from "./payment-controller"
 
 export async function paymentsRoutes(app: FastifyInstance) {
   app.get("/payments-summary", PaymentsController.getSummary)

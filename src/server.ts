@@ -1,8 +1,8 @@
 import "dotenv/config"
 import { buildApp } from "./app"
-import { HealthCheckService } from "./health-check/health-check-service"
-import { PaymentService } from "./services/payment-service"
-import { BullMqService } from "./services/bullmq-service"
+
+import { BullMqService } from "./core/lib/bullmq"
+import { PaymentService } from "./features/payments/payment-service"
 
 const server = buildApp()
 

@@ -1,8 +1,8 @@
-import { fallbackProcessor } from "../config/axios"
+import { fallbackProcessor } from "../../core/lib/axios"
 import {
   ProcessingPaymentBody,
   ProcessorHealthCheck,
-} from "../types/processors-schema"
+} from "./processors-schema"
 
 export const FallbackPaymentProcessorService = {
   managerPaymentProcessor: async (payment: ProcessingPaymentBody) => {

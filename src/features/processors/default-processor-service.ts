@@ -1,8 +1,8 @@
-import { defaultProcessor } from "../config/axios"
+import { defaultProcessor } from "../../core/lib/axios"
 import {
   ProcessingPaymentBody,
   ProcessorHealthCheck,
-} from "../types/processors-schema"
+} from "./processors-schema"
 
 export const DefaultPaymentProcessorService = {
   managerPaymentProcessor: async (payment: ProcessingPaymentBody) => {

@@ -1,7 +1,7 @@
 import fastify from "fastify"
 import "reflect-metadata"
-import { paymentsRoutes } from "./http/payments.routes"
-import { HandleError } from "./http/handleError"
+import { paymentsRoutes } from "./features/payments/payments.routes"
+import { HandleError } from "./core/http/handleError"
 
 export function buildApp() {
   const app = fastify({
