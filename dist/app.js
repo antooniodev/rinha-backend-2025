@@ -10,6 +10,9 @@ const payments_routes_1 = require("./features/payments/payments.routes");
 const handleError_1 = require("./core/http/handleError");
 function buildApp() {
     const app = (0, fastify_1.default)({
+        requestTimeout: 1400,
+        keepAliveTimeout: 5000,
+        connectionTimeout: 30000,
         logger: {
             level: "error",
         },

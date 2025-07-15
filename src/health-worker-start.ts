@@ -1,7 +1,7 @@
 // src/health-check-starter.ts
 
 import "dotenv/config"
-import { HealthCheckService } from "./health-check-service"
+import { HealthCheckService } from "./features/health-check/health-check-service"
 
 async function start() {
   try {

@@ -35,7 +35,7 @@ export const PaymentsController = {
     try {
       const input = request.body
       if (!input) {
-        reply.code(400).send({ error: "Invalid body" })
+        reply.code(400)
         return
       }
 

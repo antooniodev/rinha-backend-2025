@@ -18,7 +18,6 @@ async function runHealthCheckCycle() {
     }
 
     const chosenProcessorName = choosenProcessor(defaultHealth, fallbackHealth)
-    console.log(chosenProcessorName)
 
     healthRedisClient.set("processor_choice", chosenProcessorName)
   }

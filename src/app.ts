@@ -2,9 +2,13 @@ import fastify from "fastify"
 import "reflect-metadata"
 import { paymentsRoutes } from "./features/payments/payments.routes"
 import { HandleError } from "./core/http/handleError"
+import { performanceMonitor } from "./core/http/performance-monitor"
 
 export function buildApp() {
   const app = fastify({
+    requestTimeout: 1400,
+    keepAliveTimeout: 5000,
+    connectionTimeout: 30000,
     logger: {
       level: "error",
     },
@@ -27,6 +31,7 @@ export function buildApp() {
       }
     }
   )
+  app.register(performanceMonitor)
   app.register(paymentsRoutes)
   app.setErrorHandler(HandleError)
 

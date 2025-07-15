@@ -14,6 +14,10 @@ const QUEUE_NAME = "payment-queue"
 
 const queue = new Queue(QUEUE_NAME, {
   connection: redisClient,
+  defaultJobOptions: {
+    removeOnComplete: 100,
+    removeOnFail: 50,
+  },
 })
 
 function addJobToQueue(jobData: ProcessingPaymentBody) {
@@ -28,21 +32,25 @@ function addJobToQueue(jobData: ProcessingPaymentBody) {
 }
 
 async function processPaymentJob(payment: ProcessingPaymentBody) {
-  try {
-    let processor = await redisClient.get("processor_choice")
+  const timeoutPromise = new Promise((_, reject) => {
+    setTimeout(() => reject(new Error("Job timeout")), 5000)
+  })
 
+  const processingPromise = async () => {
+    let processor = await redisClient.get("processor_choice")
     if (!processor) processor = "default"
-    console.log(`Using processor: ${processor}`)
+
+    // Processar pagamento com timeout individual
     if (processor === "default") {
       await DefaultPaymentProcessorService.managerPaymentProcessor(payment)
     } else if (processor === "fallback") {
       await FallbackPaymentProcessorService.managerPaymentProcessor(payment)
     } else if (processor === "requeue") {
-      console.log("Requeuing payment due to processor failure")
-      addJobToQueue(payment)
+      await addJobToQueue(payment)
       return
     }
 
+    // Salvar log de forma assíncrona
     const logData: PaymentLog = {
       correlationId: payment.correlationId,
       amount: payment.amount,
@@ -50,19 +58,10 @@ async function processPaymentJob(payment: ProcessingPaymentBody) {
       requestedAt: payment.requestedAt,
     }
 
-    try {
-      await PaymentService.savePaymentLog(logData)
-    } catch (logError) {
-      console.error(
-        "CRITICAL: Payment succeeded but log save failed. Retrying job.",
-        { logData, logError }
-      )
-      throw new Error("LOG_SAVE_FAILED")
-    }
-  } catch (err) {
-    // console.error("Erro ao processar pagamento com o provedor:", err)
-    throw err
+    await PaymentService.savePaymentLog(logData)
   }
+
+  await Promise.race([processingPromise(), timeoutPromise])
 }
 
 async function processWorker() {
@@ -73,7 +72,9 @@ async function processWorker() {
     },
     {
       connection: workerRedisClient,
-      concurrency: 50,
+      concurrency: 150,
+      maxStalledCount: 1,
+      stalledInterval: 10000,
     }
   )
   console.log("Worker is running...")
@@ -83,11 +84,11 @@ async function processWorker() {
   }
 
   worker.on("failed", (job, err) => {
-    // if (job) {
-    //   console.error(`Job failed: ${job.id}, Error: ${err.message}`)
-    // } else {
-    //   console.error(`Job failed: unknown job, Error: ${err.message}`)
-    // }
+    if (job) {
+      console.error(`Job failed: ${job.id}, Error: ${err.message}`)
+    } else {
+      console.error(`Job failed: unknown job, Error: ${err.message}`)
+    }
   })
 }
 

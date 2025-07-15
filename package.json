@@ -7,7 +7,7 @@
     "lint": "eslint . --ext .ts",
     "dev": "ts-node-dev -r dotenv/config src/server.ts",
     "start": "node dist/server.js",
-    "start:healthcheck": "node dist/health-check/worker-start.js",
+    "start:healthcheck": "node dist/health-worker-start.js",
     "build": "tsc"
   },
   "keywords": [],
