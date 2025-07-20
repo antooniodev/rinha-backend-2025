@@ -1,8 +1,9 @@
-import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify"
 import { PaymentsController } from "./payment-controller"
+import { Router } from "express"
 
-export async function paymentsRoutes(app: FastifyInstance) {
-  app.get("/payments-summary", PaymentsController.getSummary)
-  app.post("/payments", PaymentsController.processPayments)
-  app.post("/purge-payments", PaymentsController.purgePayments)
-}
+const paymentsRoutes = Router()
+paymentsRoutes.get("/payments-summary", PaymentsController.getSummary)
+paymentsRoutes.post("/payments", PaymentsController.processPayments)
+paymentsRoutes.post("/purge-payments", PaymentsController.purgePayments)
+
+export default paymentsRoutes

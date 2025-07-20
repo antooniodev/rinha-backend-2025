@@ -8,11 +8,9 @@ const fastify_1 = __importDefault(require("fastify"));
 require("reflect-metadata");
 const payments_routes_1 = require("./features/payments/payments.routes");
 const handleError_1 = require("./core/http/handleError");
+const performance_monitor_1 = require("./core/http/performance-monitor");
 function buildApp() {
     const app = (0, fastify_1.default)({
-        requestTimeout: 1400,
-        keepAliveTimeout: 5000,
-        connectionTimeout: 30000,
         logger: {
             level: "error",
         },
@@ -32,6 +30,7 @@ function buildApp() {
             }
         }
     });
+    app.register(performance_monitor_1.performanceMonitor);
     app.register(payments_routes_1.paymentsRoutes);
     app.setErrorHandler(handleError_1.HandleError);
     return app;

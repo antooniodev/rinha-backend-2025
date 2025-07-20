@@ -7,14 +7,14 @@ const retryStrategy = (times: number) => {
 }
 
 const baseConfig = {
-  commandTimeout: 5000, // 5 segundos - mais realista
-  connectTimeout: 10000, // 10 segundos para conectar
+  // commandTimeout: 5000, // 5 segundos - mais realista
+  // connectTimeout: 10000, // 10 segundos para conectar
   lazyConnect: true, // Conecta quando necessário
   enableAutoPipelining: true, // Otimização de performance
   maxRetriesPerRequest: null, // Limite de tentativas por comando
   retryStrategy,
   // Configurações de pool de conexões
-  maxLoadingTimeout: 10000,
+  // maxLoadingTimeout: 10000,
 }
 export const redisClient = new IORedis(redisUrl, {
   ...baseConfig,
@@ -24,13 +24,13 @@ export const redisClient = new IORedis(redisUrl, {
 export const workerRedisClient = new IORedis(redisUrl, {
   ...baseConfig,
   // Configurações otimizadas para workers
-  commandTimeout: 8000, // Timeout maior para workers
+  // commandTimeout: 10000, // Timeout maior para workers
 })
 
 // Cliente para health checks
 export const healthRedisClient = new IORedis(redisUrl, {
   ...baseConfig,
-  commandTimeout: 3000, // Timeout menor para health checks
+  // commandTimeout: 10000, // Timeout menor para health checks
 })
 
 console.log("Conexões IORedis para BullMQ e App inicializadas.")

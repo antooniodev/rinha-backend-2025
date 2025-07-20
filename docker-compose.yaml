@@ -13,39 +13,13 @@ services:
     deploy: 
       resources:
         limits:
-          cpus: '0.1'
-          memory: '50MB'
+          cpus: '0.15'
+          memory: '20MB'
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 1s
       timeout: 3s
       retries: 30
-  health-checker:
-    build: .
-    image: api-local
-    command: yarn start:healthcheck
-    restart: always
-    networks:
-      - backend
-      - payment-processor
-    environment:
-      - PAYMENT_PROCESSOR_URL_DEFAULT=http://payment-processor-default:8080
-      - PAYMENT_PROCESSOR_URL_FALLBACK=http://payment-processor-fallback:8080
-      - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672
-      - REDIS_URL=redis://redis:6379
-    depends_on:
-      redis:
-        condition: service_healthy
-    deploy:
-      resources:
-        limits:
-          cpus: '0.1' 
-          memory: '50MB'
-    healthcheck:
-      test: ["CMD", "redis-cli", "exists", "processor_choice"]
-      interval: 2s
-      timeout: 3s
-      retries: 15
     
   api01: 
     build: .
@@ -65,8 +39,8 @@ services:
     deploy: 
       resources:
         limits:
-          cpus: '0.60'
-          memory: '105MB'
+          cpus: '0.6'
+          memory: '155MB'
   api02: 
     build: .
     image: api-local
@@ -85,12 +59,12 @@ services:
     deploy: 
       resources:
         limits:
-          cpus: '0.60'
-          memory: '105MB'
+          cpus: '0.6'
+          memory: '155MB'
   lb:
     image: nginx:1.27-alpine
     ports:
-      - "9999:80"
+      - "9999:9999"
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
     networks:
@@ -101,8 +75,8 @@ services:
     deploy: 
       resources:
         limits:
-          cpus: '0.1'
-          memory: '40MB'
+          cpus: '0.15'
+          memory: '20MB'
 
 networks:
   backend:

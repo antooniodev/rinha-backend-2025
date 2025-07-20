@@ -1,7 +1,9 @@
-import { BullMqService } from "../../core/lib/bullmq"
+import { globalQueue } from "../../server"
 import { ProcessingPaymentBody } from "../processors/processors-schema"
+import { PaymentLinkedList } from "./payment-linked-list"
 import { PaymentRepository } from "./payment-repository"
 import { PaymentInput, PaymentLog } from "./payment-schema"
+
 
 export const PaymentService = {
   getPaymentsSummary: async (from?: string, to?: string) => {
@@ -9,13 +11,19 @@ export const PaymentService = {
 
     return summary
   },
-  processPayment: (input: PaymentInput) => {
+  enqueuePayment: (input: PaymentInput) => {
     const paymentToSent: ProcessingPaymentBody = {
       correlationId: input.correlationId,
       amount: input.amount,
       requestedAt: new Date().toISOString(),
     }
-    BullMqService.addJobToQueue(paymentToSent)
+    globalQueue.enqueue(paymentToSent)
+  },
+  enqueueExistingPayment: (input: ProcessingPaymentBody) => {
+    globalQueue.enqueue(input)
+  },
+  dequeuePayment: () => {
+    return globalQueue.dequeue()
   },
   savePaymentLog: async (input: PaymentLog): Promise<void> => {
     await PaymentRepository.savePayment(input)

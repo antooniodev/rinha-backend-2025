@@ -32,36 +32,36 @@ function addJobToQueue(jobData: ProcessingPaymentBody) {
 }
 
 async function processPaymentJob(payment: ProcessingPaymentBody) {
-  const timeoutPromise = new Promise((_, reject) => {
-    setTimeout(() => reject(new Error("Job timeout")), 5000)
-  })
+  try {
+    await DefaultPaymentProcessorService.managerPaymentProcessor(payment)
 
-  const processingPromise = async () => {
-    let processor = await redisClient.get("processor_choice")
-    if (!processor) processor = "default"
-
-    // Processar pagamento com timeout individual
-    if (processor === "default") {
-      await DefaultPaymentProcessorService.managerPaymentProcessor(payment)
-    } else if (processor === "fallback") {
-      await FallbackPaymentProcessorService.managerPaymentProcessor(payment)
-    } else if (processor === "requeue") {
-      await addJobToQueue(payment)
-      return
-    }
-
-    // Salvar log de forma assíncrona
-    const logData: PaymentLog = {
+    await PaymentService.savePaymentLog({
       correlationId: payment.correlationId,
       amount: payment.amount,
-      processor: processor,
+      processor: "default",
       requestedAt: payment.requestedAt,
+    })
+  } catch (defaultError) {
+    console.error("Default processor failed, trying fallback:", defaultError)
+
+    try {
+      await FallbackPaymentProcessorService.managerPaymentProcessor(payment)
+
+      await PaymentService.savePaymentLog({
+        correlationId: payment.correlationId,
+        amount: payment.amount,
+        processor: "fallback",
+        requestedAt: payment.requestedAt,
+      })
+    } catch (fallbackError) {
+      console.error(
+        "Error processing payment with fallback processor:",
+        fallbackError
+      )
+
+      addJobToQueue(payment)
     }
-
-    await PaymentService.savePaymentLog(logData)
   }
-
-  await Promise.race([processingPromise(), timeoutPromise])
 }
 
 async function processWorker() {

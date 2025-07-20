@@ -1,25 +1,22 @@
-import "dotenv/config"
-import { buildApp } from "./app"
+import express from "express"
+import paymentsRoutes from "./features/payments/payments.routes"
+import { PaymentLinkedList } from "./features/payments/payment-linked-list"
+import { startWorkers } from "./features/processors/workers"
 
-import { BullMqService } from "./core/lib/bullmq"
-import { PaymentService } from "./features/payments/payment-service"
 
-const server = buildApp()
-server.server.timeout = 1500 // 1.5s timeout
-server.server.keepAliveTimeout = 1000 // 1s keep-alive
-server.server.headersTimeout = 1100
+const app = express()
+const PORT = 9999
 
-const start = async (): Promise<void> => {
-  try {
-    BullMqService.processWorker()
-    await PaymentService.resetDatabaseData()
-
-    await server.listen({ port: 9999, host: "0.0.0.0", backlog: 1024 })
-    console.log(`Server is running on http://localhost:9999`)
-  } catch (error) {
-    server.log.error(error)
-    process.exit(1)
-  }
+app.use(express.json())
+app.use(paymentsRoutes)
+export const globalQueue = new PaymentLinkedList()
+async function start() {
+  console.log("Iniciando fila e workers...")
+  startWorkers(20, globalQueue) 
+  console.log("Workers iniciados. Startando servidor...")
+  app.listen(PORT, () => {
+    console.log(`(Server) running on port ${PORT}`)
+  })
 }
 
 start()
