@@ -1,6 +1,5 @@
-import { globalQueue } from "../../server"
+import QueueService from "../../core/lib/redis-queue"
 import { ProcessingPaymentBody } from "../processors/processors-schema"
-import { PaymentLinkedList } from "./payment-linked-list"
 import { PaymentRepository } from "./payment-repository"
 import { PaymentInput, PaymentLog } from "./payment-schema"
 
@@ -8,7 +7,6 @@ import { PaymentInput, PaymentLog } from "./payment-schema"
 export const PaymentService = {
   getPaymentsSummary: async (from?: string, to?: string) => {
     const summary = await PaymentRepository.getSummary(from, to)
-
     return summary
   },
   enqueuePayment: (input: PaymentInput) => {
@@ -17,19 +15,14 @@ export const PaymentService = {
       amount: input.amount,
       requestedAt: new Date().toISOString(),
     }
-    globalQueue.enqueue(paymentToSent)
-  },
-  enqueueExistingPayment: (input: ProcessingPaymentBody) => {
-    globalQueue.enqueue(input)
-  },
-  dequeuePayment: () => {
-    return globalQueue.dequeue()
+
+    const queueService = new QueueService()
+    queueService.addJob(paymentToSent)
   },
   savePaymentLog: async (input: PaymentLog): Promise<void> => {
     await PaymentRepository.savePayment(input)
   },
   resetDatabaseData: async (): Promise<void> => {
-    console.log("Resetting database data")
     await PaymentRepository.resetDatabaseData()
   },
 }

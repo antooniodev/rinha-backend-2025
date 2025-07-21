@@ -6,7 +6,7 @@ export const PaymentRepository = {
     const sortedSetKey = "payments_by_date"
 
     const score = new Date(payment.requestedAt).getTime()
-
+    console.log("Saving payment at score:", new Date(payment.requestedAt).toISOString())
     const member = `${payment.amount}|${payment.processor}|${payment.correlationId}`
 
     await redisClient.zadd(sortedSetKey, score, member)
@@ -40,13 +40,6 @@ export const PaymentRepository = {
         summary[processor].totalAmount += amount
       }
     }
-
-    summary.default.totalAmount = parseFloat(
-      summary.default.totalAmount.toFixed(2)
-    )
-    summary.fallback.totalAmount = parseFloat(
-      summary.fallback.totalAmount.toFixed(2)
-    )
     return summary
   },
 

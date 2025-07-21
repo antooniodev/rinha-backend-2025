@@ -14,24 +14,22 @@ services:
       resources:
         limits:
           cpus: '0.15'
-          memory: '20MB'
+          memory: '30MB'
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 1s
       timeout: 3s
       retries: 30
     
-  api01: 
+  api01: &api01
     build: .
     image: api-local
     networks:
       - backend
       - payment-processor
     environment:
-      - UV_THREADPOOL_SIZE=128
       - PAYMENT_PROCESSOR_URL_DEFAULT=http://payment-processor-default:8080
       - PAYMENT_PROCESSOR_URL_FALLBACK=http://payment-processor-fallback:8080
-      - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672
       - REDIS_URL=redis://redis:6379
     depends_on:
       redis:
@@ -40,27 +38,10 @@ services:
       resources:
         limits:
           cpus: '0.6'
-          memory: '155MB'
+          memory: '150MB'
   api02: 
-    build: .
-    image: api-local
-    networks:
-      - backend
-      - payment-processor
-    environment:
-      - UV_THREADPOOL_SIZE=128
-      - PAYMENT_PROCESSOR_URL_DEFAULT=http://payment-processor-default:8080
-      - PAYMENT_PROCESSOR_URL_FALLBACK=http://payment-processor-fallback:8080
-      - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672
-      - REDIS_URL=redis://redis:6379
-    depends_on:
-      redis:
-        condition: service_healthy
-    deploy: 
-      resources:
-        limits:
-          cpus: '0.6'
-          memory: '155MB'
+    <<: *api01
+    
   lb:
     image: nginx:1.27-alpine
     ports:

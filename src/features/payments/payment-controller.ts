@@ -11,7 +11,6 @@ export const PaymentsController = {
       if (!from || !to) {
         return response.status(400)
       }
-      console.log("Fetching payment summary from:", from, "to:", to)
 
       const summary = await PaymentService.getPaymentsSummary(
         from as string,

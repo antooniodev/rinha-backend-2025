@@ -1,5 +1,3 @@
-// src/health-check-starter.ts
-
 import "dotenv/config"
 import { HealthCheckService } from "./features/health-check/health-check-service"
 
