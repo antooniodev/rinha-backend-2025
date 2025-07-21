@@ -10,9 +10,11 @@ const baseConfig = {
   lazyConnect: true, 
   enableAutoPipelining: true, 
   maxRetriesPerRequest: null, 
+  keepAlive: 10000,
+  connectTimeout: 10000,
   retryStrategy,
-
 }
+
 export const redisClient = new IORedis(redisUrl, {
   ...baseConfig,
 })
@@ -22,7 +24,7 @@ export const workerRedisClient = new IORedis(redisUrl, {
   ...baseConfig,
 })
 
-export const healthRedisClient = new IORedis(redisUrl, {
+export const summaryConnection = new IORedis(redisUrl, {
   ...baseConfig,
 })
 

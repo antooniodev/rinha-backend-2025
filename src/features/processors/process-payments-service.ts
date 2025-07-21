@@ -1,4 +1,4 @@
-import { healthRedisClient } from "../../core/lib/redis"
+import { summaryConnection } from "../../core/lib/redis"
 import QueueService from "../../core/lib/redis-queue"
 import { PaymentLog } from "../payments/payment-schema"
 import { PaymentService } from "../payments/payment-service"
@@ -9,7 +9,7 @@ import { ProcessingPaymentBody } from "./processors-schema"
 export async function processPayment(payment: ProcessingPaymentBody): Promise<void> {
   const queue = new QueueService()
   try {
-   
+    
     await DefaultPaymentProcessorService.managerPaymentProcessor(payment)
     const logData: PaymentLog = {
       correlationId: payment.correlationId,

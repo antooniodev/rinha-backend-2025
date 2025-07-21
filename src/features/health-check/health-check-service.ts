@@ -1,9 +1,10 @@
-import { healthRedisClient } from "../../core/lib/redis"
+import { summaryConnection } from "../../core/lib/redis"
 import { DefaultPaymentProcessorService } from "../processors/default-processor-service"
 import { FallbackPaymentProcessorService } from "../processors/fallback-processor-service"
 import { ProcessorHealthCheck } from "../processors/processors-schema"
 
 async function runHealthCheckCycle() {
+  console.log("Starting Health Check cycle...")
   const check = async () => {
     const [defaultHealth, fallbackHealth] = await Promise.all([
       DefaultPaymentProcessorService.healthCheck(),
@@ -19,11 +20,11 @@ async function runHealthCheckCycle() {
 
     const chosenProcessorName = choosenProcessor(defaultHealth, fallbackHealth)
 
-    healthRedisClient.set("processor_choice", chosenProcessorName)
+    summaryConnection.set("processor_choice", chosenProcessorName)
   }
 
   await check()
-  setInterval(check, 7000)
+  setInterval(check, 6500)
 }
 function choosenProcessor(
   defaultHealth: ProcessorHealthCheck,

@@ -11,7 +11,6 @@ app.use(express.json())
 app.use(paymentsRoutes)
 async function start() {
   console.log("Iniciando fila e workers...")
-  await HealthCheckService.start()
   startWorkers(20) 
   console.log("Workers iniciados. Startando servidor...")
   app.listen(PORT, () => {

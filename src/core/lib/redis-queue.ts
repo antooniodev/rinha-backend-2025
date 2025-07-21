@@ -17,7 +17,6 @@ class QueueService {
     }
     try {
       await this.connection.rpush(this.queueName, stringifyPayment(data));
-      console.log("Job added to Redis queue:", data);
     } catch (err) {
       console.error("Failed to add job to Redis queue:", err);
       throw err;

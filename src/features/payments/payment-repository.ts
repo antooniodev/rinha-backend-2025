@@ -1,4 +1,4 @@
-import { redisClient } from "../../core/lib/redis"
+import { summaryConnection } from "../../core/lib/redis"
 import { PaymentLog } from "./payment-schema"
 
 export const PaymentRepository = {
@@ -9,7 +9,7 @@ export const PaymentRepository = {
     console.log("Saving payment at score:", new Date(payment.requestedAt).toISOString())
     const member = `${payment.amount}|${payment.processor}|${payment.correlationId}`
 
-    await redisClient.zadd(sortedSetKey, score, member)
+    await summaryConnection.zadd(sortedSetKey, score, member)
   },
   getSummary: async (from?: string, to?: string) => {
     const sortedSetKey = "payments_by_date"
@@ -17,7 +17,7 @@ export const PaymentRepository = {
     const minScore = from ? new Date(from).getTime() : "-inf"
     const maxScore = to ? new Date(to).getTime() : "+inf"
 
-    const payments = await redisClient.zrangebyscore(
+    const payments = await summaryConnection.zrangebyscore(
       sortedSetKey,
       minScore,
       maxScore
@@ -44,6 +44,6 @@ export const PaymentRepository = {
   },
 
   resetDatabaseData: async (): Promise<void> => {
-    await redisClient.flushdb()
+    await summaryConnection.flushdb()
   },
 }
