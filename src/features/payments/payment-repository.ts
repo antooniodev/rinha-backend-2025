@@ -6,7 +6,10 @@ export const PaymentRepository = {
     const sortedSetKey = "payments_by_date"
 
     const score = new Date(payment.requestedAt).getTime()
-    console.log("Saving payment at score:", new Date(payment.requestedAt).toISOString())
+    console.log(
+      "Saving payment at score:",
+      new Date(payment.requestedAt).toISOString()
+    )
     const member = `${payment.amount}|${payment.processor}|${payment.correlationId}`
 
     await summaryConnection.zadd(sortedSetKey, score, member)

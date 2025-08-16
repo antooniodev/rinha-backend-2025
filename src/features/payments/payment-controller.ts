@@ -2,44 +2,47 @@ import { Request, Response } from "express"
 import { PaymentService } from "./payment-service"
 
 export const PaymentsController = {
-  getSummary: async (
-    request: Request,
-    response: Response
-  ) => {
+  getSummary: async (req: Request, res: Response) => {
     try {
-      const { from, to } = request.query
-      if (!from || !to) {
-        return response.status(400)
-      }
+      const { from, to } = req.query
 
       const summary = await PaymentService.getPaymentsSummary(
-        from as string,
-        to as string
+        from ? String(from) : undefined,
+        to ? String(to) : undefined
       )
-      response.status(200).json(summary)
+
+      return res.status(200).json(summary)
     } catch (error) {
-      throw error
+      console.error("Erro em /payments-summary:", error)
+      return res.status(500).json({ error: "internal server error" })
     }
   },
 
-  processPayments: (request: Request, response: Response) => {
+  processPayments: (req: Request, res: Response) => {
     try {
-      const input = request.body
+      const input = req.body
+
+      if (!input?.correlationId || !input?.amount) {
+        return res.status(400).json({ error: "invalid payload" })
+      }
+
       PaymentService.enqueuePayment(input)
-      return response.status(200).json({})
+      return res.status(202).json({}) // Accepted, sem esperar processamento
     } catch (error) {
-      throw error
+      console.error("Erro em /payments:", error)
+      return res.status(500).json({ error: "internal server error" })
     }
   },
-  purgePayments: async (request: Request, response: Response) => {
+
+  purgePayments: async (_req: Request, res: Response) => {
     try {
       await PaymentService.resetDatabaseData()
-
-      response.status(200).json({
+      return res.status(200).json({
         message: "Payments data purged successfully",
       })
     } catch (error) {
-      throw error
+      console.error("Erro em /purge-payments:", error)
+      return res.status(500).json({ error: "internal server error" })
     }
   },
 }

@@ -3,7 +3,6 @@ import { ProcessingPaymentBody } from "../processors/processors-schema"
 import { PaymentRepository } from "./payment-repository"
 import { PaymentInput, PaymentLog } from "./payment-schema"
 
-
 export const PaymentService = {
   getPaymentsSummary: async (from?: string, to?: string) => {
     const summary = await PaymentRepository.getSummary(from, to)
